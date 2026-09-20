@@ -223,3 +223,7 @@ A task is complete when **all** of these are true:
 | Before DB-008 | Confirm the fee model: 0.1% of what exactly, and who pays (owner, agent, client, split) | It seeds `fee_rules` and shapes the close flow. The engine is configurable, but the launch value must be a real business decision, not a placeholder. |
 | Before FEE-003 | Thai counsel review of the fee agreement, ToS and the platform-vs-brokerage positioning | The first invoice should not be the first time this is examined (risk L2/L3). |
 | Before QA-006 | Whether the existing public Lovable prototype stays live, is relabelled a demo, or is retired | Two live products under one brand confuses users and splits the supply pool (ADR-0012). |
+
+## UI-017 — approved isolated prototype track
+
+ARCH-001 → UI-017 (governance → app-private contracts → runtime/eight templates → tests → PR). This scoped exception is approved by Claude round 3 with Owner path approval; see ADR-0014. It does not alter the production critical path or claim ARCH-002+/AUTH/DB/MATCH completion. All source changes follow the approved amended concierge contract.

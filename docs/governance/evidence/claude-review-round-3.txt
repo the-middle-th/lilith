@@ -1,0 +1,103 @@
+Claude responded: LILITH — Architecture / Governance Review, Round 3 (Final Pre-Code Gate)
+Structuring the final scoped approval and its conditions.
+
+Structuring the final scoped approval and its conditions.
+LILITH — Architecture / Governance Review, Round 3 (Final Pre-Code Gate)
+
+Read-only reassessment. No tools, connectors, or memory used; nothing modified, deployed, or contacted. This is my own independent judgment on the evidence supplied, not a confirmation of the outcome the packet is structured to produce.
+
+FINAL VERDICT: APPROVE_FOR_CODEX — scoped strictly to governance-artifact creation, then implementation of the named prototype path. Not an implementation-complete, test-pass, deployment, or merge authorization.
+ROLE
+
+Claude — Architecture / Governance Reviewer, independent, read-only, per review_request.md, continuing the same review thread (round 3).
+
+REVIEWED INPUTS AND THEIR LIMITS
+owner-path-approval.json — a record of an Owner reply in the Codex conversation, exact question and exact answer both included. I am treating this as the authoritative Owner-authorization evidence this review has been waiting for, as recorded — but I note a genuine limit: unlike the Notion sources in earlier rounds, this record carries no verification.state field, page history, or independent corroboration mechanism. It is a self-contained assertion of what the Owner said, supplied to me the same way the rest of the packet has been. I have no way to verify it beyond internal consistency, and I am weighing it accordingly: sufficient to act on for a pre-code, non-production, non-deployed gate, but I would hold a materially higher bar before treating an equivalent unverified record as authorization for anything touching production, DNS, billing, or real customer data.
+revision-2-and-owner-decision.md — amendments closing round 2's five findings, explicitly separating "Owner-approved" (path only) from "submitted for Claude approval" (architecture details). I'm holding it to that self-imposed separation rather than reading Owner approval into the architecture details.
+revision-2-checks.json — fresh recheck (07:38 UTC, three minutes after the Owner reply) confirming no branch/task-ID/ADR-number collision at check time, and, importantly, containing the actual source of the two boundary-rule files (packages/config/eslint.config.js, packages/config/rules/boundaries.js) rather than just a description of them — this lets me verify finding 4's claim directly instead of taking it on faith.
+OWNER APPROVAL — TAKEN EXACTLY AS RECORDED, NOT ENLARGED
+
+"อนุมัติข้อเสนอ repository / branch / แอปแยกนี้" — approving the exact question naming repository the-middle-th/lilith, base SHA 762affefba84209a9a96263ef7f834ddc8e7fd7c, branch feat/UI-017-lilith-connect-prototype, app apps/concierge-prototype, condition: source changes start only after Claude's APPROVE_FOR_CODEX.
+
+This approves only those four named items and that one condition. It does not itself approve: the UI-017 task-ID assignment, the ADR-0014 number, the ARCH-001-only dependency exception, the CI-workflow design, the boundary-rule code change, or the governance-file paths. Per revision-2-and-owner-decision.md's own framing, those remain submitted for my review as architecture reviewer — which is the correct division of labor per BLUEPRINT_README.md's own reading order ("Reviewer (Claude) ... these are where correctness is decided"), and I am reviewing them on that basis below, not assuming Owner sign-off on them.
+
+REPOSITORY / REVIEW PATH — NOW APPROVED
+Repository: the-middle-th/lilith
+Base branch/SHA: codex/lilith-prototype @ 762affefba84209a9a96263ef7f834ddc8e7fd7c (upstream ARCH-001 genuinely merged here, confirmed rounds 1–2)
+Implementation branch: feat/UI-017-lilith-connect-prototype (unoccupied as of the 07:38 UTC recheck — must be re-verified immediately before creation, as the spec itself already requires)
+App boundary: apps/concierge-prototype, local-only, loopback-only, no shared HTTP router or domain mapping with apps/web
+
+This resolves the round-1 BLOCKED_CANONICAL_REPO_MAPPING gate for this scope only (isolated, unhosted, mock-data prototype). It does not resolve, and does not claim to resolve, the eventual production route-namespace question between LILITH Connect and the marketplace — revision-2-and-owner-decision.md correctly states this is a separate future decision, and I am holding that boundary too.
+
+38/8 COVERAGE
+
+Unchanged from rounds 1–2: structurally correct (38 unique routes, 8 templates, 4+16+2+5+3+3+3+2=38, no collisions or unmapped routes) as a document.
+
+TECHNICAL SPECIFICATION: ACCEPTABLE
+
+Round 2's five items are now addressed. I checked each against what's newly supplied rather than accepting the claim of closure at face value:
+
+Edit invalidation — now fully specified (consent resets to unset, notice to unacknowledged, images removed in the same transaction, idempotent no-op replay preserved). Closed.
+Fallback-of-fallback — English completeness is now an explicit hard CI/build gate, including error-path keys; corrupted resources fail closed to a minimal error rather than partial content. Closed.
+CI scope — explicit turbo --filter='!@lilith/concierge-prototype' exclusion from the foundation job, plus a separate ui-017-concierge-prototype.yml workflow. I verified this against the actual turbo.json and pnpm-workspace.yaml supplied in revision-2-checks.json: the apps/* glob will indeed sweep the new app into root aggregate scripts unless filtered, confirming the proposed fix is necessary and correctly targeted. Closed, contingent on the filter syntax matching the new workspace's actual package.json name (see condition below).
+Import enforcement — I checked this directly against the actual packages/config/rules/boundaries.js source now supplied. The claim is correct: workspaceOf()'s regex is apps\/(web|worker) — it does not currently recognize any other app, so ESLint's architecture/boundaries rule would silently produce zero findings for apps/concierge-prototype today (the glob picks up the files, but workspaceOf returns null and the visitor returns {} unchecked). This is a real gap, correctly identified, and closing it requires editing shared tooling (packages/config/rules/boundaries.js, dependencies map) — see condition (a) below, since this is a materially different kind of change than "app-private" code.
+Collision recheck — fresh, timestamped, done after the Owner's reply, confirms no UI-017, no ADR-0014, no occupied branch name, no existing app path. Closed for now; the spec correctly requires re-verification immediately before branch/file creation, which I am keeping as a standing condition, not a one-time check already discharged.
+REMAINING CONDITIONS OF APPROVAL (not blockers — must be satisfied at governance/implementation time, not before this gate)
+
+(a) The boundary-rule edit is a shared-tooling change, not an app-private one — flag this explicitly in the ADR. Every other isolation guarantee in this proposal (no runtime imports, own persistence, own router) is scoped to apps/concierge-prototype itself. Registering the new workspace in packages/config/rules/boundaries.js's workspaceOf() regex and dependencies map is, by contrast, an edit to code shared across the whole monorepo. It's a small, mechanical, additive change (new regex alternative, new self-only dependency entry) and I have no objection to it — but ADR-0014 should name it as an explicit, scoped exception to "no production domain exports to shared packages," since it is a touch to shared packages/config, just not a domain export. Silently letting a reader assume "app-private" means "zero shared-file edits" would be inaccurate.
+
+(b) The new workspace's package.json name must be exactly @lilith/concierge-prototype for the proposed turbo --filter='!@lilith/concierge-prototype' exclusion and the pnpm --filter @lilith/concierge-prototype ... scripts to actually work. This should be fixed in writing in docs/concierge-prototype-contract.md at governance-file-creation time, not left implicit.
+
+(c) Standing condition, not new: re-verify branch name, UI-017, and ADR-0014 are still unoccupied immediately before creating them, per the spec's own instruction. If anything has changed, stop and report — do not silently renumber or reuse.
+
+None of (a)–(c) block this gate; they are exactly the kind of detail governance-file creation exists to pin down, and I'm listing them so they don't get lost between this review and implementation.
+
+SCOPED ARCH-001 DEPENDENCY EXCEPTION — APPROVED
+
+UI-017 depends only on merged ARCH-001; it is architecturally sound to approve this as an isolated exception because: (1) it adds no runtime import from apps/concierge-prototype into core/db/ai/contracts production domains — enforced once condition (a) is implemented; (2) it neither claims nor requires ARCH-002+/AUTH/DB/MATCH completion; (3) AGENTS.md's own rule is "record architecture interpretations in an ADR" — which is exactly what's proposed (ADR-0014). Approved, to be recorded in ADR-0014 as stated.
+
+MUST FIX
+
+None remaining that block this gate. Conditions (a)–(c) above carry forward into governance-file creation and implementation.
+
+GOVERNANCE FILE CREATION — AUTHORIZED, in this order, before any implementation:
+docs/adr/ADR-0014-lilith-connect-prototype-boundary.md — must explicitly record: the local-runtime-only scope (production/domain routing relationship with apps/web stays a future decision), the ARCH-001-only dependency exception, and the shared-tooling touch to packages/config/rules/boundaries.js per condition (a).
+docs/governance/LILITH_38_ROUTE_MANIFEST.md
+docs/governance/LILITH_P0_RELIABILITY_GATE.md
+docs/governance/WEB_PORTFOLIO_REGISTRY.md
+docs/concierge-prototype-contract.md — carrying the full amended spec (rounds 2+3), including the @lilith/concierge-prototype package-name commitment (condition b).
+Scoped amendments to AGENTS.md, IMPLEMENTATION_ORDER.md, docs/07-codex-handoff.md (adding the UI-017 entry), docs/ARCHITECTURE.md, docs/IMPLEMENTATION_STATUS.md.
+APPROVED IMPLEMENTATION SCOPE
+
+After the above governance files exist and the standing recheck (item c) is clean: Codex may create branch feat/UI-017-lilith-connect-prototype off 762affefba84209a9a96263ef7f834ddc8e7fd7c and implement apps/concierge-prototype per the full amended specification (round 2 sections 1–5, plus round 3's five closures), including the packages/config boundary-rule registration. Not authorized under this approval: deployment, hosting, DNS, billing, merge, cross-repository migration, real customer contact, or any claim of passing tests/CI — those require separate, later evidence (actual CI output, Manus QA, a further Claude review of the delivered PR), none of which exists yet and none of which this approval fabricates.
+
+EVIDENCE
+Owner approval record and its exact scope: owner-path-approval.json.
+Technical closure of round-2 findings 1–2, 5: revision-2-and-owner-decision.md §"Five review findings."
+Verified against actual source (not just description) for findings 3–4: revision-2-checks.json.tooling_sources (turbo.json, pnpm-workspace.yaml, packages/config/eslint.config.js, packages/config/rules/boundaries.js).
+Collision-freedom at recheck time: revision-2-checks.json.branch_records, .tree_record, .task_id, .implementation_order, .embedded_adrs.
+NEXT HANDOFF
+
+To Codex: create governance artifacts (order above) → recheck branch/task-ID/ADR-number immediately before creation → implement apps/concierge-prototype per the amended contract, including conditions (a)–(c) → local pnpm build/typecheck/lint/test:boundaries plus the new prototype scripts → commit/push/PR without merge → Lovable UI verification (no backend-schema changes) → Manus independent QA on the exact HEAD → back to Claude for a final implementation-evidence review before any further step. No step beyond PR creation is authorized by this gate.
+
+สรุปภาษาไทย
+
+ผลสรุปรอบสาม: APPROVE_FOR_CODEX — แต่ขอบเขตจำกัดเฉพาะ "การสร้างไฟล์ governance ก่อน แล้วจึง implement" เท่านั้น ไม่ใช่การอนุมัติว่าทดสอบผ่านหรือ deploy ได้
+
+Path ที่อนุมัติ: repo the-middle-th/lilith, base SHA 762affefba84209a9a96263ef7f834ddc8e7fd7c, branch feat/UI-017-lilith-connect-prototype, แอปแยก apps/concierge-prototype — ตรงตามที่ Owner ตอบยืนยันจริง (ไม่ขยายความเกินคำตอบที่ให้มา)
+
+สเปคเทคนิค: ACCEPTABLE — ปิดประเด็นทั้ง 5 ข้อจากรอบ 2 ได้จริง โดยตรวจสอบกับโค้ดจริงที่แนบมา (ไม่ใช่แค่เชื่อคำอธิบาย) พบว่า:
+
+ข้อ 4 (import boundary) ตรวจสอบแล้วว่าเป็นจริง — boundaries.js ปัจจุบันไม่รู้จัก app ใหม่เลย ต้องแก้ไฟล์ shared tooling จริง ซึ่งควรระบุไว้ใน ADR-0014 อย่างชัดเจนว่าเป็นข้อยกเว้นที่แก้ไฟล์ shared (แม้จะไม่ใช่ production domain export ก็ตาม)
+ข้อ 3 (CI scope) การกรองด้วย turbo --filter ใช้ได้จริง แต่ต้องกำหนดชื่อ package @lilith/concierge-prototype ให้ตรงกันจริงตอนสร้างไฟล์
+
+เงื่อนไขที่ต้องทำก่อน implement จริง (ไม่ใช่ blocker แต่เป็นเงื่อนไข): สร้างไฟล์ governance ตามลำดับที่ระบุ, ระบุข้อยกเว้น shared-tooling ใน ADR ให้ชัด, ตรวจสอบชื่อ package ให้ตรง, และ recheck ชื่อ branch/UI-017/ADR-0014 ซ้ำอีกครั้งก่อนสร้างจริง
+
+Codex ยังห้าม deploy, merge, ติดต่อลูกค้าจริง, หรือ claim ว่าทดสอบผ่าน — ขั้นต่อไปคือสร้างไฟล์ governance → implement → ทดสอบใน CI จริง → PR (ไม่ merge) → Lovable/Manus ตรวจสอบ → กลับมาให้ Claude รีวิวหลักฐานการ implement จริงอีกครั้ง
+
+
+
+
+
+
+4 minutes ago

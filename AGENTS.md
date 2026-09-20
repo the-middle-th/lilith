@@ -10,3 +10,7 @@ The supplied Blueprint v1.0 is the architecture specification. Read `BLUEPRINT_R
 - Update `docs/IMPLEMENTATION_STATUS.md` after meaningful phases. End a PR with `STATUS / EVIDENCE / RISKS / BLOCKERS / NEXT / OWNER APPROVAL`.
 
 Foundation validation: `pnpm install --frozen-lockfile`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test:boundaries`.
+
+## UI-017 approved isolated prototype exception
+
+Claude APPROVE_FOR_CODEX and Owner path approval are recorded in docs/governance/evidence; ADR-0014 and docs/concierge-prototype-contract.md govern this task. UI-017 depends only on merged ARCH-001. Its app-private mock runtime at apps/concierge-prototype may implement its own request contracts without production core/DB/AI imports. This does not complete or replace ARCH-002+ tasks. Only the approved shared boundary tooling and CI scopes change outside the app. Preserve the original application and static prototype. Run root build/typecheck/lint/test, boundary tests and prototype contract/E2E checks; no deployment or merge.

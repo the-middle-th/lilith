@@ -14,3 +14,9 @@ prototype-mobile-check.png
 !**/.env.example
 **/playwright-report/
 **/test-results/
+
+# UI-017 local-only synthetic store and browser outputs
+.local/
+**/playwright-report/
+**/test-results/
+**/output/playwright/

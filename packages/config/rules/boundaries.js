@@ -7,7 +7,7 @@ const normalize = (/** @type {string} */ value) => value.replaceAll("\\", "/");
 /** @param {string} filename */
 function workspaceOf(filename) {
   const match =
-    /^(packages\/(contracts|core|db|ai|ui|i18n|config)|apps\/(web|worker))(?:\/|$)/.exec(
+    /^(packages\/(contracts|core|db|ai|ui|i18n|config)|apps\/(web|worker|concierge-prototype))(?:\/|$)/.exec(
       filename,
     );
   return match?.[2] ?? match?.[3] ?? null;
@@ -15,6 +15,18 @@ function workspaceOf(filename) {
 
 /** @param {string} filename @param {string} specifier */
 function resolveTarget(filename, specifier) {
+  if (/^@lilith\/concierge-prototype(?:\/|$)/.test(specifier)) {
+    return path.posix.normalize(
+      `apps/concierge-prototype${specifier.slice("@lilith/concierge-prototype".length)}`,
+    );
+  }
+  if (specifier.startsWith("file:")) {
+    try {
+      return normalize(path.relative(repositoryRoot, fileURLToPath(specifier)));
+    } catch {
+      return "invalid-file-url";
+    }
+  }
   if (specifier.startsWith("@lilith/")) {
     return path.posix.normalize(
       `packages/${specifier.slice("@lilith/".length)}`,
@@ -91,7 +103,24 @@ const dependencies = {
   ui: ["ui", "contracts", "i18n"],
   i18n: ["i18n"],
   config: ["config"],
+  "concierge-prototype": ["concierge-prototype"],
 };
+
+/** @param {string} filename */
+function prototypeLayer(filename) {
+  return (
+    /^apps\/concierge-prototype\/src\/(server|client|shared)(?:\/|$)/.exec(
+      filename,
+    )?.[1] ?? null
+  );
+}
+
+/** @param {string} filename */
+function prototypeTooling(filename) {
+  return /^apps\/concierge-prototype\/(?:scripts\/|(?:eslint|vitest|playwright)\.config\.[cm]?[jt]s$)/.test(
+    filename,
+  );
+}
 
 /** @type {import("eslint").Rule.RuleModule} */
 export const boundaries = {
@@ -115,6 +144,8 @@ export const boundaries = {
     const relative = normalize(path.relative(repositoryRoot, filename));
     const workspace = workspaceOf(relative);
     if (!workspace) return {};
+    const prototype = workspace === "concierge-prototype";
+    const layer = prototypeLayer(relative);
     const pure = isPureModule(relative);
     const clientComponent = context.sourceCode.ast.body.some(
       (node) =>
@@ -132,8 +163,30 @@ export const boundaries = {
       const cleanSpecifier = specifier.replace(/[?#].*$/, "");
       const target = resolveTarget(filename, cleanSpecifier);
       const targetWorkspace = target === null ? null : workspaceOf(target);
+      const targetLayer = target === null ? null : prototypeLayer(target);
+      const toolingConfig =
+        prototype && prototypeTooling(relative) && targetWorkspace === "config";
       let reason = null;
       if (
+        prototype &&
+        layer &&
+        target === null &&
+        !(layer === "server" && cleanSpecifier.startsWith("node:"))
+      ) {
+        reason =
+          "Prototype runtime uses only app-private modules and server Node built-ins";
+      } else if (
+        prototype &&
+        layer &&
+        targetWorkspace === "concierge-prototype" &&
+        (targetLayer === null ||
+          (layer === "shared" && targetLayer !== "shared") ||
+          (layer === "client" && targetLayer === "server") ||
+          (layer === "server" && targetLayer === "client"))
+      ) {
+        reason =
+          "Prototype client/shared/server layers cannot import another layer's private code or tooling";
+      } else if (
         workspace !== "db" &&
         /(^|\/)(@prisma\/[^/]+|\.prisma\/client|generated\/(prisma|client))(\/|$)/.test(
           cleanSpecifier,
@@ -177,7 +230,8 @@ export const boundaries = {
       } else if (
         target !== null &&
         (!targetWorkspace ||
-          !dependencies[workspace ?? ""]?.includes(targetWorkspace))
+          (!dependencies[workspace ?? ""]?.includes(targetWorkspace) &&
+            !toolingConfig))
       ) {
         reason =
           "This workspace may not depend on that layer or on legacy root files";

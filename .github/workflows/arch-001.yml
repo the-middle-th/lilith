@@ -30,9 +30,21 @@ jobs:
           node-version: "24"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm typecheck
-      - run: pnpm lint
+      - name: Verify the original foundation workspace selection
+        run: |
+          pnpm exec turbo run build typecheck lint --filter='!@lilith/concierge-prototype' --dry=json > "$RUNNER_TEMP/foundation-tasks.json"
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          const graph = JSON.parse(readFileSync(process.env.RUNNER_TEMP + '/foundation-tasks.json', 'utf8'));
+          const expected = ['ai', 'config', 'contracts', 'core', 'db', 'i18n', 'ui', 'web', 'worker'].map(name => '@lilith/' + name).sort();
+          assert.deepEqual([...graph.packages].sort(), expected);
+          assert.ok(graph.tasks.every(task => expected.includes(task.package)));
+          console.log('Foundation retains all nine original workspaces.');
+          NODE
+      - run: pnpm exec turbo run build --filter='!@lilith/concierge-prototype'
+      - run: pnpm exec turbo run typecheck --filter='!@lilith/concierge-prototype'
+      - run: pnpm exec turbo run lint --filter='!@lilith/concierge-prototype'
       - run: pnpm test:boundaries
       - name: Verify the lockfile did not change
         run: git diff --exit-code -- pnpm-lock.yaml

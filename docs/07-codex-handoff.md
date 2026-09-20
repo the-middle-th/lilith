@@ -608,3 +608,12 @@
 | 10 Hardening | QA-001…006 | authz, e2e, load, security, launch |
 
 **91 tasks** (ARCH 5 · DB 11 · AUTH 4 · SEC 2 · API 4 · MATCH 9 · AI 9 · DEAL 9 · FEE 5 · UI 16 · ADMIN 6 · OPS 5 · QA 6). Estimated 14–18 weeks for one strong engineer plus Codex, or 9–12 weeks with two engineers running the parallel tracks marked in `IMPLEMENTATION_ORDER.md`.
+
+## Isolated prototype track
+
+### UI-017 — LILITH Connect 38-route / 8-template concierge prototype
+- **Dependencies:** merged ARCH-001 only; explicit scoped exception in ADR-0014.
+- **Files:** apps/concierge-prototype; governance/ADR/contract documentation; shared boundary registration/tests; separate prototype CI; exact development lockfile.
+- **Acceptance:** docs/concierge-prototype-contract.md full amended spec: exact38/8, six categories, minimal synthetic fixtures, guarded truthful states, consent, th/en fallback, durable idempotency, owner/session isolation, four-image reliability, null handoff destination, no external side effects.
+- **Tests:** root frozen install/build/typecheck/lint/test; test:boundaries; app test:contract and test:e2e. Actual passing CI required before Done; no fabricated claims.
+- **Handoff:** Lovable UI contract → Manus exact-HEAD QA → Claude final review → Director. No merge or deployment.
