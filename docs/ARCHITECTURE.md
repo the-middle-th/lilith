@@ -21,3 +21,7 @@ ARCH-001 creates the buildable workspace and enforces imports. It does not imple
 Imports cannot reach the legacy root prototype. `no-restricted-imports` plus the local architecture rule check static imports, re-exports, type imports, literal dynamic imports, require and relative paths. Computed module paths fail lint. Pure matching/helper modules have a closed dependency set; deterministic runtime tests are still required in MATCH tasks.
 
 See [ADR-0013](adr/ADR-0013-blueprint-foundation-adoption.md) for reconciliation decisions. Other numbered Blueprint documents remain unchanged.
+
+## Approved UI-017 concierge boundary
+
+The separate @lilith/concierge-prototype workspace serves 38 local logical routes using eight templates, an app-private Node HTTP runtime and durable synthetic JSON store. No runtime dependencies on production workspaces or legacy static files; no shared router/store with apps/web or Property Pulse. Shared packages/config adds only scoped isolation enforcement and tests. Separate CI plus root aggregate verification. See ADR-0014 and concierge-prototype-contract.md; production route/domain relationships remain undecided.

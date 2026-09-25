@@ -1,3 +1,11 @@
+# UI-017 current status — 2026-09-20
+
+Pre-code gate: APPROVE_FOR_CODEX, Claude round 3 with explicit Owner path approval. Governance artifacts were created before implementation. UI-017 implementation is delivered for independent review; local build/typecheck/lint, 20 prototype unit tests, 159 import-boundary tests, 28 HTTP/entrypoint contract tests and 14 browser tests pass. Hosted CI is recorded on the exact PR HEAD; this local evidence is not a substitute for its result. Repository the-middle-th/lilith; base 762affefba84209a9a96263ef7f834ddc8e7fd7c; branch feat/UI-017-lilith-connect-prototype. No deployment or merge is authorized. Lovable/Manus/final Claude verification remains the next handoff.
+
+Correction to historical ARCH-001 status below: upstream PR #2 merged 2026-09-07 at this exact base SHA. Its old “awaiting merge” text is historical, not current authority. ARCH-002 remains unmerged and is not imported. Prototype uses the approved ARCH-001-only exception.
+
+---
+
 # Implementation status
 
 Updated: 2026-09-08. Current task: **ARCH-001 — Monorepo scaffold**.

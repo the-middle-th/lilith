@@ -1,0 +1,66 @@
+name: UI-017 concierge prototype
+
+on:
+  pull_request:
+  push:
+    branches: ["feat/UI-017-lilith-connect-prototype"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: concierge-prototype-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prototype:
+    name: Mock-only concierge checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      TURBO_TELEMETRY_DISABLED: "1"
+      AI_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Verify the prototype task selection
+        run: |
+          pnpm exec turbo run build typecheck lint test --filter=@lilith/concierge-prototype --dry=json > "$RUNNER_TEMP/prototype-tasks.json"
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          const graph = JSON.parse(readFileSync(process.env.RUNNER_TEMP + '/prototype-tasks.json', 'utf8'));
+          assert.deepEqual(graph.packages, ['@lilith/concierge-prototype']);
+          const allowed = ['@lilith/concierge-prototype', '@lilith/config'];
+          assert.ok(graph.tasks.every(task => allowed.includes(task.package)));
+          console.log('Prototype tasks include only the new app and shared tooling.');
+          NODE
+      - name: Build, typecheck, lint and unit tests
+        run: pnpm exec turbo run build typecheck lint test --filter=@lilith/concierge-prototype --force
+      - name: Shared import boundary regressions
+        run: pnpm test:boundaries
+      - name: Prototype HTTP and persistence contracts
+        run: pnpm --filter @lilith/concierge-prototype test:contract
+      - name: Install test browser
+        run: pnpm --filter @lilith/concierge-prototype exec playwright install --with-deps chromium
+      - name: Loopback browser tests
+        run: pnpm --filter @lilith/concierge-prototype test:e2e
+      - name: Verify the lockfile did not change
+        run: git diff --exit-code -- pnpm-lock.yaml
+      - name: Preserve synthetic browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-017-synthetic-browser-screenshots
+          path: |
+            apps/concierge-prototype/test-results/**/*.png
+            apps/concierge-prototype/output/playwright/*.png
+          if-no-files-found: ignore
+          retention-days: 7

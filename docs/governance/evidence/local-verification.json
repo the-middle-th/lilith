@@ -1,0 +1,71 @@
+{
+  "scope": "UI-017 prototype local verification; hosted CI result belongs to exact PR HEAD",
+  "mock_data": true,
+  "prototype_only": true,
+  "base_sha": "762affefba84209a9a96263ef7f834ddc8e7fd7c",
+  "route_count": 38,
+  "template_count": 8,
+  "unit_tests": 20,
+  "boundary_tests": 159,
+  "contract_tests": 28,
+  "browser_tests": 14,
+  "local_browser": "Google Chrome 153.0.8010.50 via PLAYWRIGHT_CHANNEL=chrome on macOS 13",
+  "commands": [
+    {
+      "name": "build",
+      "command": "pnpm build",
+      "exit_code": 0,
+      "duration_seconds": 7.06
+    },
+    {
+      "name": "typecheck",
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "duration_seconds": 6.5
+    },
+    {
+      "name": "lint",
+      "command": "pnpm lint",
+      "exit_code": 0,
+      "duration_seconds": 4.78
+    },
+    {
+      "name": "unit",
+      "command": "pnpm test",
+      "exit_code": 0,
+      "duration_seconds": 8.58
+    },
+    {
+      "name": "boundaries",
+      "command": "pnpm test:boundaries",
+      "exit_code": 0,
+      "duration_seconds": 6.8
+    },
+    {
+      "name": "contract",
+      "command": "pnpm --filter @lilith/concierge-prototype test:contract",
+      "exit_code": 0,
+      "duration_seconds": 4.73
+    },
+    {
+      "name": "browser",
+      "command": "PLAYWRIGHT_CHANNEL=chrome pnpm --filter @lilith/concierge-prototype test:e2e",
+      "exit_code": 0,
+      "duration_seconds": 48.05
+    }
+  ],
+  "install": {
+    "command": "pnpm install --frozen-lockfile",
+    "exit_code": 0
+  },
+  "logs_sha256": {
+    "browser.log": "ff344a54cbcaa33b0f3894d66335f23abcdfb4218342a1e43dacadcce4358e48",
+    "contract.log": "88e0b0747d4160acb66efa7a00e00d587f3e243af3507a0ca8b6fce419d50560",
+    "lint.log": "18ea4a0f58c72cd23cf28faa77db64c7d6f9aaa28866b826c4e0eff6b9f642a2",
+    "typecheck.log": "405634b4f94a6bef75450b0be418c7cb254c05526cfabfc67e5ba7a696f434f1",
+    "boundaries.log": "14f8177d601be1cc779ce2e2a77ccaaa6de21c704600aa251a2efa3be7c31057",
+    "unit.log": "2557be8b43b49cfb4ad79c6651ec79c9106b13bffe85f2533f2590af49fb4456",
+    "install.log": "5807313ec0d4f39346bbf1aede4533dae1946dec25ef8fb539381bf928b90792",
+    "build.log": "3c19e1a8f62dacac5ffc86148ab993974c10e92ada8e14a74efe9ddd5413ff6f"
+  }
+}

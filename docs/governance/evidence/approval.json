@@ -1,0 +1,14 @@
+{
+  "verdict": "APPROVE_FOR_CODEX",
+  "review_url": "https://claude.ai/chat/a665ed8d-149f-4025-97cc-44885177bf5c",
+  "repository": "the-middle-th/lilith",
+  "base_sha": "762affefba84209a9a96263ef7f834ddc8e7fd7c",
+  "branch": "feat/UI-017-lilith-connect-prototype",
+  "app": "apps/concierge-prototype",
+  "task": "UI-017",
+  "adr": "ADR-0014",
+  "prototype_only": true,
+  "mock_data": true,
+  "source_modification_gate": "satisfied",
+  "recorded_at": "2026-09-20T07:45:48.975703+00:00"
+}

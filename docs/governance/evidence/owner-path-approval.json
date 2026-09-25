@@ -1,0 +1,19 @@
+{
+  "source": "Explicit user reply in current Codex thread",
+  "recorded_at": "2026-09-20T07:35:43.036251+00:00",
+  "owner_answer_verbatim": "อนุมัติข้อเสนอ repository / branch / แอปแยกนี้",
+  "approved_repository": "the-middle-th/lilith",
+  "approved_base_sha": "762affefba84209a9a96263ef7f834ddc8e7fd7c",
+  "approved_branch": "feat/UI-017-lilith-connect-prototype",
+  "approved_app": "apps/concierge-prototype",
+  "condition": "Source modification starts only after applicable Claude APPROVE_FOR_CODEX",
+  "not_authorized": [
+    "deployment",
+    "publishing",
+    "production changes",
+    "merge",
+    "cross-repository source migration"
+  ],
+  "question_verbatim": "ยืนยันข้อเสนอนี้สำหรับ LILITH prototype หรือไม่: ใช้ repository `the-middle-th/lilith` จากฐาน `762affefba84209a9a96263ef7f834ddc8e7fd7c`, สร้าง branch `feat/UI-017-lilith-connect-prototype` และแยกแอป `apps/concierge-prototype` ภายใน repo เดิม โดยเริ่มแก้ source หลัง Claude ออก APPROVE_FOR_CODEX เท่านั้น?\n\nต้องให้ Owner ยืนยันเพราะคำสั่งเดิมระบุ repo นี้เป็น candidate เท่านั้น และ Claude รอบแรกยังไม่รับรอง canonical path",
+  "approval_scope_note": "Exact recorded answer approves this question. Other technical decisions below are Codex proposals, not fabricated Owner quotations."
+}

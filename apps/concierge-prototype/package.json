@@ -1,0 +1,23 @@
+{
+  "name": "@lilith/concierge-prototype",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm build && node dist/server/main.js",
+    "start": "node dist/server/main.js",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.client.json",
+    "lint": "eslint src tests scripts *.config.ts",
+    "test": "vitest run --config vitest.config.ts tests/unit",
+    "test:contract": "vitest run --config vitest.config.ts tests/contract",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@lilith/config": "workspace:*",
+    "@types/node": "22.19.19",
+    "@playwright/test": "1.63.0",
+    "typescript": "5.9.3",
+    "eslint": "9.39.4",
+    "vitest": "5.0.0"
+  }
+}
