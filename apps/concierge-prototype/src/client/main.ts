@@ -78,6 +78,19 @@ function remember(key: string, value: string): void {
 function link(path: string, label: string, className = "", extra = ""): string {
   return `<a href="${escape(path)}" class="${className}" ${extra}>${label}</a>`;
 }
+function externalLink(
+  path: string,
+  label: string,
+  className = "",
+  extra = "",
+): string {
+  return link(
+    path,
+    label,
+    className,
+    `target="_blank" rel="noopener noreferrer" ${extra}`,
+  );
+}
 function button(
   action: string,
   label: string,
@@ -371,7 +384,7 @@ function render(): void {
     document.documentElement.lang = translation.locale;
     const route = resolveRoute(location.pathname);
     document.title = `${route ? translation.t(`routes.${route.content_key}.title`) : translation.t("app.not_found")} · LILITH Connect`;
-    app.innerHTML = `<a class="skip-link" href="#content">${t("nav.skip")}</a><div class="prototype-strip"><span class="tiny-dot" aria-hidden="true"></span>${t("app.prototype")}</div><header class="site-header">${link("/welcome", '<span class="wordmark">LILITH</span><span class="wordmark-sub">CONNECT</span>', "brand", 'aria-label="LILITH Connect"')}<nav aria-label="${t("nav.explore")}">${link("/explore", t("nav.explore"))}${link("/my-request", t("nav.request"))}${link("/lili/reception", t("hero.start"), "nav-lili")}</nav>${languageControls()}</header>${translation.fallback ? `<p class="fallback-notice" role="status">${t("locale.fallback")}</p>` : ""}<div class="feedback" aria-live="polite">${busy ? `<p class="saving-note">${t("app.saving")}</p>` : ""}${errorCode ? `<div class="error-box" role="alert"><p>${errorCode === "NETWORK" ? t("app.offline") : t(resources[translation.locale][`error.${errorCode}`] ? `error.${errorCode}` : "error.INTERNAL_ERROR")}</p>${retryAction ? button("retry", t("app.retry"), 'data-testid="retry-operation"', "small-button") : ""}</div>` : ""}</div><main id="content" data-route-id="${route?.route_id ?? "unknown"}" data-template-id="${route?.template_id ?? ""}">${!ready ? `<p class="loading" role="status">${t("app.loading")}</p>` : route ? TEMPLATE_RENDERERS[route.template_id](route) : `<section class="paper empty"><p class="eyebrow">404</p><h1 tabindex="-1">${t("app.not_found")}</h1><p>${t("app.not_found.description")}</p>${link("/welcome", t("nav.home"), "button")}</section>`}</main><footer class="site-footer"><div><span class="wordmark">LILITH</span><p>${t("footer.signature")}</p></div><div><p>${t("footer.note")}</p>${link("/support", t("routes.help_support.title"))}${link("/privacy-safety", t("routes.privacy_safety.title"))}</div></footer>`;
+    app.innerHTML = `<a class="skip-link" href="#content">${t("nav.skip")}</a><div class="prototype-strip"><span class="tiny-dot" aria-hidden="true"></span>${t("app.prototype")}</div><header class="site-header">${link("/welcome", '<span class="wordmark">LILITH</span><span class="wordmark-sub">CONNECT</span>', "brand", 'aria-label="LILITH Connect"')}<nav aria-label="${t("nav.explore")}">${link("/explore", t("nav.explore"))}${link("/my-request", t("nav.request"))}${externalLink("https://www.yacht.day/", t("nav.yacht"))}${link("/lili/reception", t("hero.start"), "nav-lili")}</nav>${languageControls()}</header>${translation.fallback ? `<p class="fallback-notice" role="status">${t("locale.fallback")}</p>` : ""}<div class="feedback" aria-live="polite">${busy ? `<p class="saving-note">${t("app.saving")}</p>` : ""}${errorCode ? `<div class="error-box" role="alert"><p>${errorCode === "NETWORK" ? t("app.offline") : t(resources[translation.locale][`error.${errorCode}`] ? `error.${errorCode}` : "error.INTERNAL_ERROR")}</p>${retryAction ? button("retry", t("app.retry"), 'data-testid="retry-operation"', "small-button") : ""}</div>` : ""}</div><main id="content" data-route-id="${route?.route_id ?? "unknown"}" data-template-id="${route?.template_id ?? ""}">${!ready ? `<p class="loading" role="status">${t("app.loading")}</p>` : route ? TEMPLATE_RENDERERS[route.template_id](route) : `<section class="paper empty"><p class="eyebrow">404</p><h1 tabindex="-1">${t("app.not_found")}</h1><p>${t("app.not_found.description")}</p>${link("/welcome", t("nav.home"), "button")}</section>`}</main><footer class="site-footer"><div><span class="wordmark">LILITH</span><p>${t("footer.signature")}</p></div><div><p>${t("footer.note")}</p>${link("/support", t("routes.help_support.title"))}${link("/privacy-safety", t("routes.privacy_safety.title"))}${externalLink("https://www.yacht.day/", t("footer.yacht"))}</div></footer>`;
   } catch {
     // English completeness is a build gate. Unexpected runtime corruption fails closed.
     app.replaceChildren();
