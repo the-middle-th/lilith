@@ -920,8 +920,7 @@ legend {
   .site-header nav {
     order: 2;
     width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    justify-content: space-between;
     padding-top: 10px;
     border-top: 1px solid var(--line);
     gap: 18px;
