@@ -2,7 +2,7 @@
 
 ## Scope
 
-This document reconciles **Lovable Lilith Connect** revision
+This document reconciles the **backend/security delta** introduced in Lovable Lilith Connect revision
 `7b62ed0de7038d0c5faa7b85326d2c78702453e9`
 against the canonical GitHub prototype contract at
 `9395e0a7a04dab07d54705bfab2e9b96a1345176`.
@@ -32,7 +32,9 @@ Revision: `7b62ed0de7038d0c5faa7b85326d2c78702453e9`
 
 Compared with: `f210ba9a329d3c85369756156282812545c5b028`
 
-Observed changed files:
+Current Lovable working revision is `50c9e69a6c6db133caf6812e9dcd7cb182940f8b`. The later move from `7b62ed0d…` to `50c9e69a…` is documentation/comment-only and does not change the backend/security delta classified below. Any UI/documentation QA must bind to `50c9e69a…`; backend classification below remains tied to the exact backend-changing revision `7b62ed0d…` and its diff from `f210ba9a…`.
+
+Observed backend/security changed files:
 - `drizzle/migrations/0009_migration.sql`
 - `drizzle/migrations/meta/0009_snapshot.json`
 - `drizzle/migrations/meta/_journal.json`
@@ -137,6 +139,7 @@ Required behavior:
 ## Gate status
 
 - GitHub prototype 38 Routes / 8 Templates: **PASS — isolated prototype evidence**
+- Lovable documentation contradiction: **FIXED at working revision `50c9e69a6c6db133caf6812e9dcd7cb182940f8b`**
 - Lovable UX/runtime acceptance: **REVISE**
 - Lovable backend ownership: **BLOCKED until Codex-owned implementation exists**
 - Grok exact-revision QA: **BLOCKED_NATIVE_AGENT / NOT_RECEIVED**
